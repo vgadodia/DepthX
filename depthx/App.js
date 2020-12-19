@@ -8,7 +8,7 @@ export default function App() {
   return (
     <>
       <StatusBar style="auto" />
-      <Howitworks />
+      <Signin />
     </>
   );
 }
