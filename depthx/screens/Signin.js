@@ -9,6 +9,8 @@ import * as WebBrowser from "expo-web-browser";
 
 import { AuthSession } from "expo";
 
+console.disableYellowBox = true;
+
 const client_id = "b8d9a9d5e7d5441690edf7f26f137b82";
 const client_secret = "bab57308756c485097e18fa5561fd00f";
 
@@ -23,7 +25,7 @@ export default function Signin() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: client_id,
-      response_type: "token",
+      response_type: "code",
       scopes: [
         "user-read-email",
         "playlist-modify-public",
@@ -46,12 +48,34 @@ export default function Signin() {
   );
 
   const handleAccessToken = (code) => {
-    fetch("https://reqbin.com/echo/get/json", {
-      method: "GET",
+    var details = {
+      client_id: client_id,
+      client_secret: client_secret,
+      code: code,
+      grant_type: "authorization_code",
+      redirect_uri: makeRedirectUri(),
+    };
+
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+
+    fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      },
+      body: formBody,
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        if (data.access_token) {
+          console.log(data.access_token);
+        }
       });
   };
 
@@ -59,29 +83,14 @@ export default function Signin() {
     if (response?.type === "success") {
       const { code } = response.params;
 
-      // fetch("https://accounts.spotify.com/api/token", {
-      //   method: "POST",
-      //   body: JSON.stringify({
-      //     client_id: client_id,
-      //     client_secret: client_secret,
-      //     code: code,
-      //     grant_type: "authorization_code",
-      //     redirect_uri: makeRedirectUri(),
-      //   }),
-      // })
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     console.log(data);
-      //   });
+      handleAccessToken(code);
 
       // AsyncStorage.setItem("token", JSON.stringify(code));
       // navigation.navigate("PhoneScreen");
     }
-    // console.log(makeRedirectUri());
   }, [response]);
 
   const handleSpotify = () => {
-    console.log("Handle spotify");
     promptAsync();
   };
 
@@ -138,7 +147,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   titleText: {
-    fontSize: 32,
+    fontSize: 24,
   },
   buttonsFlex: {
     flex: 0.22,
