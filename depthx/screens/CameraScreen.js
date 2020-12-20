@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // import CallDetectorManager from 'react-native-call-detection'
 import { AntDesign, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import AppText from '../components/AppText';
+import * as Haptics from "expo-haptics";
 
 const TensorCamera = cameraWithTensors(Camera);
 const AUTORENDER = true;
@@ -33,7 +34,7 @@ export default class CameraScreen extends React.Component {
       hands: [],
       mobilenetClasses: [],
       gesture: "nothing detected",
-      showCamera: true,
+      showCamera: false,
     };
 
     this.handleImageTensorReady = this.handleImageTensorReady.bind(this);
@@ -260,13 +261,19 @@ export default class CameraScreen extends React.Component {
             name="arrow-left-circle"
             size={45}
             color="#39B3BB"
-            onPress={() => console.log("Logout")}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              this.props.navigation.navigate("SigninScreen")
+            }}
           />
           <AntDesign
             name="questioncircle"
             size={40}
             color="#39B3BB"
-            onPress={() => console.log("How it works")}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              this.props.navigation.navigate("HowitworksScreen")
+            }}
           />
 
         </View>

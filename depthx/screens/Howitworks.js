@@ -3,15 +3,15 @@ import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import SvgComponent from "../svg/SvgComponent"
 import AppText from "../components/AppText"
 import HowitworksRow from "../components/HowitworksRow"
-import { Ionicons } from "@expo/vector-icons"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 import * as Haptics from 'expo-haptics';
 
 export default function Howitworks({navigation}) {
   return (
     <View style={styles.container}>
         <View style={styles.emptyFlex}>
-            <Ionicons 
-              name="arrow-back-circle" 
+            <MaterialCommunityIcons 
+              name="arrow-left-circle" 
               size={45}
               color="#39B3BB"
               onPress={() => {
