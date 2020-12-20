@@ -1,12 +1,16 @@
-import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
-import Svg, { Circle, Line } from 'react-native-svg';
-import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-react-native';
-import * as handpose from '@tensorflow-models/handpose';
-import * as Permissions from 'expo-permissions';
-import { Camera } from 'expo-camera';
-import { cameraWithTensors, fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
+import React from "react";
+import { StyleSheet, View, Image, Text } from "react-native";
+import Svg, { Circle, Line } from "react-native-svg";
+import * as tf from "@tensorflow/tfjs";
+import "@tensorflow/tfjs-react-native";
+import * as handpose from "@tensorflow-models/handpose";
+import * as Permissions from "expo-permissions";
+import { Camera } from "expo-camera";
+import {
+  cameraWithTensors,
+  fetch,
+  decodeJpeg,
+} from "@tensorflow/tfjs-react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import CallDetectorManager from 'react-native-call-detection'
@@ -28,7 +32,7 @@ export default class CameraScreen extends React.Component {
     this.state = {
       isTfReady: false,
       cameraType: Camera.Constants.Type.front,
-      lastShape: 'none',
+      lastShape: "none",
       hands: [],
       mobilenetClasses: [],
       gesture: "nothing detected",
@@ -42,11 +46,10 @@ export default class CameraScreen extends React.Component {
   }
 
   async componentDidMount() {
-
     await tf.ready();
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     let textureDims;
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       textureDims = { height: 1920, width: 1080 };
     } else {
       textureDims = { height: 1200, width: 1600 };
@@ -59,7 +62,7 @@ export default class CameraScreen extends React.Component {
       //width: styles.camera.width / tensorDims.width,
       height: 1,
       width: 1,
-    }
+    };
 
     const handposeModel = await this.loadHandposeModel();
 
@@ -70,7 +73,6 @@ export default class CameraScreen extends React.Component {
       textureDims,
       tensorDims,
       scale,
-
     });
   }
 
@@ -79,9 +81,12 @@ export default class CameraScreen extends React.Component {
       if (this.state.handDetector != null) {
         if (frameCount % makePredictionEveryNFrames === 0) {
           const imageTensor = images.next().value;
+          const decode = tf.node.decodeImage(imageTensor, 3);
           const returnTensors = false;
           const hands = await this.state.handDetector.estimateHands(
-            imageTensor, returnTensors);
+            decode,
+            returnTensors
+          );
           tf.dispose(imageTensor);
           this.setState({ hands });
         }
@@ -101,9 +106,7 @@ export default class CameraScreen extends React.Component {
   }
 
   renderInitialization() {
-    return (
-      null
-    );
+    return null;
   }
 
   renderHandsDebugInfo() {
@@ -211,22 +214,24 @@ export default class CameraScreen extends React.Component {
   renderMain() {
     const { textureDims, hands, tensorDims } = this.state;
 
-    const camView = <View style={styles.cameraContainer}>
-      <TensorCamera
-        // Standard Camera props
-        style={styles.camera}
-        type={this.state.cameraType}
-        zoom={0}
-        // tensor related props
-        cameraTextureHeight={textureDims.height}
-        cameraTextureWidth={textureDims.width}
-        resizeHeight={tensorDims.height}
-        resizeWidth={tensorDims.width}
-        resizeDepth={3}
-        onReady={this.handleImageTensorReady}
-        autorender={AUTORENDER}
-      />
-    </View>;
+    const camView = (
+      <View style={styles.cameraContainer}>
+        <TensorCamera
+          // Standard Camera props
+          style={styles.camera}
+          type={this.state.cameraType}
+          zoom={0}
+          // tensor related props
+          cameraTextureHeight={textureDims.height}
+          cameraTextureWidth={textureDims.width}
+          resizeHeight={tensorDims.height}
+          resizeWidth={tensorDims.width}
+          resizeDepth={3}
+          onReady={this.handleImageTensorReady}
+          autorender={AUTORENDER}
+        />
+      </View>
+    );
 
     return (
       <View>
@@ -234,7 +239,9 @@ export default class CameraScreen extends React.Component {
 
         {/* <Text style={styles.textContainer}>tf.backend {tf.getBackend()}</Text> */}
         <View style={styles.infoContainer}>
-          <Text style={styles.titleText}>Detected Gesture: {this.state.gesture}</Text>
+          <Text style={styles.titleText}>
+            Detected Gesture: {this.state.gesture}
+          </Text>
         </View>
         {/* <Text style={styles.textContainer}># hands detected: {hands.length}</Text> */}
         {/* {this.renderBoundingBoxes()} */}
@@ -246,80 +253,79 @@ export default class CameraScreen extends React.Component {
   renderBoundingBoxes() {
     const { hands, scale } = this.state;
     // On android the bounding boxes need to be mirrored horizontally
-    const flipHorizontal = Platform.OS === 'ios' ? false : true;
+    const flipHorizontal = Platform.OS === "ios" ? false : true;
     return hands.map((hand, i) => {
       const { topLeft, bottomRight } = face;
-      const bbLeft = (topLeft[0] * scale.width);
+      const bbLeft = topLeft[0] * scale.width;
       const boxStyle = Object.assign({}, styles.bbox, {
-        left: flipHorizontal ? (previewWidth - bbLeft) - previewLeft : bbLeft + previewLeft,
-        top: (topLeft[1] * scale.height) + 20,
+        left: flipHorizontal
+          ? previewWidth - bbLeft - previewLeft
+          : bbLeft + previewLeft,
+        top: topLeft[1] * scale.height + 20,
         width: (bottomRight[0] - topLeft[0]) * scale.width,
         height: (bottomRight[1] - topLeft[1]) * scale.height,
       });
 
-      return <View style={boxStyle} key={`face${i}`}></View>
-      1
+      return <View style={boxStyle} key={`face${i}`}></View>;
+      1;
     });
   }
 
   render() {
     const { isTfReady } = this.state;
-    return (
-      isTfReady ? this.renderMain() : this.renderInitialization()
-    );
+    return isTfReady ? this.renderMain() : this.renderInitialization();
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
   cameraContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '90%',
-    backgroundColor: '#fff',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "90%",
+    backgroundColor: "#fff",
   },
   textContainer: {
-    alignItems: 'center',
-    textAlign: 'center',
-    top: 30
+    alignItems: "center",
+    textAlign: "center",
+    top: 30,
   },
   camera: {
-    position: 'absolute',
+    position: "absolute",
     left: previewLeft,
     top: previewTop,
     width: previewWidth,
     height: previewHeight,
     zIndex: 1,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: "black",
     borderRadius: 0,
   },
   bbox: {
-    position: 'absolute',
+    position: "absolute",
     borderWidth: 2,
-    borderColor: 'green',
+    borderColor: "green",
     borderRadius: 0,
   },
   titleText: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black'
+    fontWeight: "bold",
+    color: "black",
   },
   infoContainer: {
     flex: 1,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
     top: 30,
-
-  }
+  },
 });
