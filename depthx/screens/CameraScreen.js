@@ -43,6 +43,8 @@ export default class CameraScreen extends React.Component {
       mobilenetClasses: [],
       gesture: "nothing detected",
       showCamera: false,
+      playing: false,
+      token: "",
     };
 
     this.handleImageTensorReady = this.handleImageTensorReady.bind(this);
@@ -51,8 +53,27 @@ export default class CameraScreen extends React.Component {
   async loadHandposeModel() {
     return await handpose.load();
   }
-
   async componentDidMount() {
+    let token = await AsyncStorage.getItem("token");
+
+    token = token.substring(1, token.length);
+
+    this.setState({ token: token });
+    console.log(token);
+
+    const headers = {
+      Authorization: "Bearer " + token,
+    };
+
+    fetch("https://api.spotify.com/v1/me/player", {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ playing: data.is_playing });
+      });
+
     await tf.ready();
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     let textureDims;
@@ -459,7 +480,7 @@ export default class CameraScreen extends React.Component {
             }}
           />
         </View>
-        <View style={styles.cameraContainer}>
+        {/*<View style={styles.cameraContainer}>
           {this.state.showCamera === true ? (
             <TensorCamera
               style={styles.camera}
@@ -493,7 +514,7 @@ export default class CameraScreen extends React.Component {
               this.setState({ showCamera: cameraOn });
             }}
           />
-        </View>
+        </View>*/}
         <View style={styles.spaceContainer}></View>
         <View style={styles.gestureContainer}>
           <AppText style={{ color: "#39B3BB", fontSize: 18 }}>
@@ -508,18 +529,78 @@ export default class CameraScreen extends React.Component {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialCommunityIcons
               name="skip-previous"
+              onPress={() => {
+                this.setState({ playing: true });
+                fetch("https://api.spotify.com/v1/me/player/previous", {
+                  method: "POST",
+                  headers: {
+                    Authorization: "Bearer " + this.state.token,
+                  },
+                })
+                  .then((response) => response.json())
+                  .then((data) => console.log(data))
+                  .catch((error) => console.log(error.message));
+              }}
               size={45}
               color="black"
               style={{ paddingHorizontal: 10 }}
             />
-            <MaterialCommunityIcons
-              name="play"
-              size={55}
-              color="black"
-              style={{ paddingHorizontal: 10 }}
-            />
+            {!this.state.playing && (
+              <MaterialCommunityIcons
+                name="play"
+                onPress={() => {
+                  this.setState({ playing: true });
+                  fetch("https://api.spotify.com/v1/me/player/play", {
+                    method: "PUT",
+                    headers: {
+                      Authorization: "Bearer " + this.state.token,
+                    },
+                  })
+                    .then((response) => response.json())
+                    .then((data) => console.log(data))
+                    .catch((error) => console.log(error.message));
+                }}
+                size={55}
+                color="black"
+                style={{ paddingHorizontal: 10 }}
+              />
+            )}
+
+            {this.state.playing && (
+              <MaterialCommunityIcons
+                name="pause"
+                size={55}
+                onPress={() => {
+                  this.setState({ playing: false });
+                  fetch("https://api.spotify.com/v1/me/player/pause", {
+                    method: "PUT",
+                    headers: {
+                      Authorization: "Bearer " + this.state.token,
+                    },
+                  })
+                    .then((response) => response.json())
+                    .then((data) => console.log(data))
+                    .catch((error) => console.log(error.message));
+                }}
+                color="black"
+                style={{ paddingHorizontal: 10 }}
+              />
+            )}
+
             <MaterialCommunityIcons
               name="skip-next"
+              onPress={() => {
+                this.setState({ playing: true });
+                fetch("https://api.spotify.com/v1/me/player/next", {
+                  method: "POST",
+                  headers: {
+                    Authorization: "Bearer " + this.state.token,
+                  },
+                })
+                  .then((response) => response.json())
+                  .then((data) => console.log(data))
+                  .catch((error) => console.log(error.message));
+              }}
               size={45}
               color="black"
               style={{ paddingHorizontal: 10 }}
