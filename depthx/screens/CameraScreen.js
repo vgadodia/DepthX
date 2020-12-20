@@ -109,104 +109,103 @@ export default class CameraScreen extends React.Component {
   renderHandsDebugInfo() {
     const { hands, scale, textureDims } = this.state;
 
-    console.log("Here")
+    console.log(hands)
 
-    return hands.map((hand, i) => {
-      // const {topLeft, bottomRight, probability} = hand;
-      // Render landmarks 
-      if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-        console.log("pause");
-        fetch('https://api.spotify.com/v1/me/player/pause', {
-          method: 'PUT',
-          headers: {
-            'Authorization': "Bearer " + AsyncStorage.getItem("token")
-          },
+    return null;
+    
+    // hands.map((hand, i) => {
+    //   // const {topLeft, bottomRight, probability} = hand;
+    //   // Render landmarks 
+    //   if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
+    //     console.log("pause");
+    //     fetch('https://api.spotify.com/v1/me/player/pause', {
+    //       method: 'PUT',
+    //       headers: {
+    //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
+    //       },
 
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data))
-          .catch((error) => console.log(error.message));
-        if (this.state.gesture != "pause") {
-          this.setState({ gesture: "pause" });
-        }
-      }
-      else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] > hand.landmarks[16][1] && hand.landmarks[17][1] > hand.landmarks[20][1]) {
-        console.log("play");
-        fetch('https://api.spotify.com/v1/me/player/play', {
-          method: 'PUT',
-          headers: {
-            'Authorization': "Bearer " + AsyncStorage.getItem("token")
-          },
+    //     })
+    //       .then((response) => response.json())
+    //       .then((data) => console.log(data))
+    //       .catch((error) => console.log(error.message));
+    //     if (this.state.gesture != "pause") {
+    //       this.setState({ gesture: "pause" });
+    //     }
+    //   }
+    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] > hand.landmarks[16][1] && hand.landmarks[17][1] > hand.landmarks[20][1]) {
+    //     console.log("play");
+    //     fetch('https://api.spotify.com/v1/me/player/play', {
+    //       method: 'PUT',
+    //       headers: {
+    //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
+    //       },
 
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data))
-          .catch((error) => console.log(error.message));
-        if (this.state.gesture != "play") {
-          this.setState({ gesture: "play" });
-        }
-      }
-      else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-        console.log("primary contact");
-      }
-      else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-        console.log("skip to next song");
+    //     })
+    //       .then((response) => response.json())
+    //       .then((data) => console.log(data))
+    //       .catch((error) => console.log(error.message));
+    //     if (this.state.gesture != "play") {
+    //       this.setState({ gesture: "play" });
+    //     }
+    //   }
+    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
+    //     console.log("primary contact");
+    //   }
+    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
+    //     console.log("skip to next song");
 
-        fetch('https://api.spotify.com/v1/me/player/next', {
-          method: 'POST',
-          headers: {
-            'Authorization': "Bearer " + AsyncStorage.getItem("token")
-          },
+    //     fetch('https://api.spotify.com/v1/me/player/next', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
+    //       },
 
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data))
-          .catch((error) => console.log(error.message));
-        if (this.state.gesture != "skip to next song") {
-          this.setState({ gesture: "skip to next song" });
-        }
-      }
-      else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] > hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-        console.log("get slack messages");
-      }
-      else if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] > hand.landmarks[20][1]) {
-      }
-
-
-      const rate = 1;
-
-      return <>
-        <Svg key={i} height={previewHeight} width={previewWidth} viewBox={`0 0 290 500`} style={{ position: 'absolute', top: 200, left: 0, opacity: 0.9 }}>
-          <Circle cx={hand.landmarks[0][0] * rate} cy={hand.landmarks[0][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[1][0] * rate} cy={hand.landmarks[1][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[2][0] * rate} cy={hand.landmarks[2][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[3][0] * rate} cy={hand.landmarks[3][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[4][0] * rate} cy={hand.landmarks[4][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[5][0] * rate} cy={hand.landmarks[5][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[6][0] * rate} cy={hand.landmarks[6][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[7][0] * rate} cy={hand.landmarks[7][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[8][0] * rate} cy={hand.landmarks[8][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[9][0] * rate} cy={hand.landmarks[9][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[10][0] * rate} cy={hand.landmarks[10][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[11][0] * rate} cy={hand.landmarks[11][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[12][0] * rate} cy={hand.landmarks[12][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[13][0] * rate} cy={hand.landmarks[13][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[14][0] * rate} cy={hand.landmarks[14][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[15][0] * rate} cy={hand.landmarks[15][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[16][0] * rate} cy={hand.landmarks[16][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[17][0] * rate} cy={hand.landmarks[17][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[18][0] * rate} cy={hand.landmarks[18][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[19][0] * rate} cy={hand.landmarks[19][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-          <Circle cx={hand.landmarks[20][0] * rate} cy={hand.landmarks[20][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
+    //     })
+    //       .then((response) => response.json())
+    //       .then((data) => console.log(data))
+    //       .catch((error) => console.log(error.message));
+    //     if (this.state.gesture != "skip to next song") {
+    //       this.setState({ gesture: "skip to next song" });
+    //     }
+    //   }
+    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] > hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
+    //     console.log("get slack messages");
+    //   }
+    //   else if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] > hand.landmarks[20][1]) {
+    //   }
 
 
+    //   const rate = 1;
 
-        </Svg>
-        <Text style={styles.textContainer} key={`faceInfo${i}`}>
-          Probability: {hand.handInViewConfidence}
-        </Text>
-      </>
-    });
+    //   return <>
+    //     <Svg key={i} height={previewHeight} width={previewWidth} viewBox={`0 0 290 500`} style={{ position: 'absolute', top: 200, left: 0, opacity: 0.9 }}>
+    //       <Circle cx={hand.landmarks[0][0] * rate} cy={hand.landmarks[0][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[1][0] * rate} cy={hand.landmarks[1][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[2][0] * rate} cy={hand.landmarks[2][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[3][0] * rate} cy={hand.landmarks[3][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[4][0] * rate} cy={hand.landmarks[4][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[5][0] * rate} cy={hand.landmarks[5][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[6][0] * rate} cy={hand.landmarks[6][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[7][0] * rate} cy={hand.landmarks[7][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[8][0] * rate} cy={hand.landmarks[8][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[9][0] * rate} cy={hand.landmarks[9][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[10][0] * rate} cy={hand.landmarks[10][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[11][0] * rate} cy={hand.landmarks[11][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[12][0] * rate} cy={hand.landmarks[12][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[13][0] * rate} cy={hand.landmarks[13][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[14][0] * rate} cy={hand.landmarks[14][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[15][0] * rate} cy={hand.landmarks[15][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[16][0] * rate} cy={hand.landmarks[16][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[17][0] * rate} cy={hand.landmarks[17][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[18][0] * rate} cy={hand.landmarks[18][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[19][0] * rate} cy={hand.landmarks[19][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
+    //       <Circle cx={hand.landmarks[20][0] * rate} cy={hand.landmarks[20][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
+    //     </Svg>
+    //     <Text style={styles.textContainer} key={`faceInfo${i}`}>
+    //       Probability: {hand.handInViewConfidence}
+    //     </Text>
+    //   </>
+    // });
   }
 
   renderMain() {
