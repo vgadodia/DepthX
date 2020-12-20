@@ -109,6 +109,8 @@ export default class CameraScreen extends React.Component {
   renderHandsDebugInfo() {
     const { hands, scale, textureDims } = this.state;
 
+    console.log("Here")
+
     return hands.map((hand, i) => {
       // const {topLeft, bottomRight, probability} = hand;
       // Render landmarks 
