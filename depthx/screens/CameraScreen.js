@@ -102,12 +102,6 @@ export default class CameraScreen extends React.Component {
 
   renderInitialization() {
     return (
-      // <View style={styles.container}>
-      //   <Text>Initializaing TensorFlow.js!</Text>
-      //   <Text>tf.version {tf.version_core}</Text>
-      //   <Text>tf.backend {tf.getBackend()}</Text>
-      // </View>
-      // <LottieAnimation />
       null
     );
   }
@@ -139,7 +133,7 @@ export default class CameraScreen extends React.Component {
         fetch('https://api.spotify.com/v1/me/player/play', {
           method: 'PUT',
           headers: {
-            'Authorization': "Bearer BQCAFcuI0IYatRAxVv8L6DJ7uur14ZBXPq5oUXQ13QlmoZoJc1iSHrd6fFDCgXb4f0llBrhW9V42FzCZSfOnMI1dkQrxFabtGNQ24miJKBH9nnFGhWQbpAEEQt4qbQDmK5gaRTlFgZqd5b6CbzWyLJfC6SSBbPWsj7aQA3q-CeJlBSW-ZiBVHKZdD9WJwoXk8AujiVqZEyjA4G2_PSo1RKcKlhqUj2YVw_FfuOgygfqcFnGNspI4--il_QfuKDwpv1rls6ZTl1fbQBU7CirVjuDZCOthuzN-fb4d6i4"
+            'Authorization': "Bearer " + AsyncStorage.getItem("token")
           },
 
         })
@@ -159,7 +153,7 @@ export default class CameraScreen extends React.Component {
         fetch('https://api.spotify.com/v1/me/player/next', {
           method: 'POST',
           headers: {
-            'Authorization': "Bearer BQCAFcuI0IYatRAxVv8L6DJ7uur14ZBXPq5oUXQ13QlmoZoJc1iSHrd6fFDCgXb4f0llBrhW9V42FzCZSfOnMI1dkQrxFabtGNQ24miJKBH9nnFGhWQbpAEEQt4qbQDmK5gaRTlFgZqd5b6CbzWyLJfC6SSBbPWsj7aQA3q-CeJlBSW-ZiBVHKZdD9WJwoXk8AujiVqZEyjA4G2_PSo1RKcKlhqUj2YVw_FfuOgygfqcFnGNspI4--il_QfuKDwpv1rls6ZTl1fbQBU7CirVjuDZCOthuzN-fb4d6i4"
+            'Authorization': "Bearer " + AsyncStorage.getItem("token")
           },
 
         })

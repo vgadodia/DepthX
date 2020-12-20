@@ -83,6 +83,7 @@ export default function Signin({ navigation }) {
   };
 
   React.useEffect(() => {
+    console.log(makeRedirectUri());
     if (response?.type === "success") {
       const { code } = response.params;
 
