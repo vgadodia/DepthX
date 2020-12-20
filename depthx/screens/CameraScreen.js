@@ -156,7 +156,10 @@ export default class CameraScreen extends React.Component {
         hand.landmarks[17][1] < hand.landmarks[20][1]
       ) {
         console.log("pause");
-        this.setState({ playing: false });
+
+        if (this.state.playing == true) {
+          this.setState({ playing: false });
+        }
         fetch("https://api.spotify.com/v1/me/player/pause", {
           method: "PUT",
           headers: {
@@ -177,7 +180,9 @@ export default class CameraScreen extends React.Component {
         hand.landmarks[17][1] > hand.landmarks[20][1]
       ) {
         console.log("play");
-        this.setState({ playing: true });
+        if (this.state.playing == false) {
+          this.setState({ playing: true });
+        }
         fetch("https://api.spotify.com/v1/me/player/play", {
           method: "PUT",
           headers: {
@@ -198,8 +203,9 @@ export default class CameraScreen extends React.Component {
         hand.landmarks[17][1] < hand.landmarks[20][1]
       ) {
         console.log("skip to next song");
-        this.setState({ playing: true });
-
+        if (this.state.playing == false) {
+          this.setState({ playing: true });
+        }
         fetch("https://api.spotify.com/v1/me/player/next", {
           method: "POST",
           headers: {
