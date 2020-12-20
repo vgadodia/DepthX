@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import SvgComponent from "../svg/SvgComponent"
