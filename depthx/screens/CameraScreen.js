@@ -156,16 +156,16 @@ export default class CameraScreen extends React.Component {
         hand.landmarks[17][1] < hand.landmarks[20][1]
       ) {
         console.log("pause");
-        // fetch('https://api.spotify.com/v1/me/player/pause', {
-        //   method: 'PUT',
-        //   headers: {
-        //     'Authorization': "Bearer " + AsyncStorage.getItem("token")
-        //   },
-
-        // })
-        // .then((response) => response.json())
-        // .then((data) => console.log(data))
-        // .catch((error) => console.log(error.message));
+        this.setState({ playing: false });
+        fetch("https://api.spotify.com/v1/me/player/pause", {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + this.state.token,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.log(error.message));
 
         if (this.state.gesture != "pause") {
           this.setState({ gesture: "pause" });
@@ -177,32 +177,20 @@ export default class CameraScreen extends React.Component {
         hand.landmarks[17][1] > hand.landmarks[20][1]
       ) {
         console.log("play");
-        // fetch('https://api.spotify.com/v1/me/player/play', {
-        //   method: 'PUT',
-        //   headers: {
-        //     'Authorization': "Bearer " + AsyncStorage.getItem("token")
-        //   },
-
-        // })
-        // .then((response) => response.json())
-        // .then((data) => console.log(data))
-        // .catch((error) => console.log(error.message));
+        this.setState({ playing: true });
+        fetch("https://api.spotify.com/v1/me/player/play", {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + this.state.token,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.log(error.message));
 
         if (this.state.gesture != "play") {
           this.setState({ gesture: "play" });
         }
-      } else if (
-        hand.landmarks[5][1] > hand.landmarks[8][1] &&
-        hand.landmarks[9][1] < hand.landmarks[12][1] &&
-        hand.landmarks[13][1] < hand.landmarks[16][1] &&
-        hand.landmarks[17][1] < hand.landmarks[20][1]
-      ) {
-        console.log("primary contact");
-        // if (this.state.gesture !== "primary contact") {
-        //   this.setState({ gesture: "primary contact" });
-        //   const contact1 = AsyncStorage.getItem("contact1")
-        //   Linking.openURL('tel://' + "6175840000")
-        // }
       } else if (
         hand.landmarks[5][1] > hand.landmarks[8][1] &&
         hand.landmarks[9][1] > hand.landmarks[12][1] &&
@@ -210,37 +198,21 @@ export default class CameraScreen extends React.Component {
         hand.landmarks[17][1] < hand.landmarks[20][1]
       ) {
         console.log("skip to next song");
+        this.setState({ playing: true });
 
-        // fetch('https://api.spotify.com/v1/me/player/next', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Authorization': "Bearer " + AsyncStorage.getItem("token")
-        //   },
-        // })
-        // .then((response) => response.json())
-        // .then((data) => console.log(data))
-        // .catch((error) => console.log(error.message));
+        fetch("https://api.spotify.com/v1/me/player/next", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + this.state.token,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.log(error.message));
 
         if (this.state.gesture != "skip to next song") {
           this.setState({ gesture: "skip to next song" });
         }
-      } else if (
-        hand.landmarks[5][1] > hand.landmarks[8][1] &&
-        hand.landmarks[9][1] > hand.landmarks[12][1] &&
-        hand.landmarks[13][1] > hand.landmarks[16][1] &&
-        hand.landmarks[17][1] < hand.landmarks[20][1]
-      ) {
-        console.log("get slack messages");
-        if (this.state.gesture != "get slack messages") {
-          this.setState({ gesture: "get slack messages" });
-        }
-      } else if (
-        hand.landmarks[5][1] < hand.landmarks[8][1] &&
-        hand.landmarks[9][1] < hand.landmarks[12][1] &&
-        hand.landmarks[13][1] < hand.landmarks[16][1] &&
-        hand.landmarks[17][1] > hand.landmarks[20][1]
-      ) {
-        console.log("secondary contact");
       } else {
         console.log("Hello");
         if (this.state.gesture != "nothing detected") {
@@ -480,7 +452,7 @@ export default class CameraScreen extends React.Component {
             }}
           />
         </View>
-        {/*<View style={styles.cameraContainer}>
+        <View style={styles.cameraContainer}>
           {this.state.showCamera === true ? (
             <TensorCamera
               style={styles.camera}
@@ -514,7 +486,7 @@ export default class CameraScreen extends React.Component {
               this.setState({ showCamera: cameraOn });
             }}
           />
-        </View>*/}
+        </View>
         <View style={styles.spaceContainer}></View>
         <View style={styles.gestureContainer}>
           <AppText style={{ color: "#39B3BB", fontSize: 18 }}>
