@@ -5,8 +5,9 @@ import SvgComponent from "../svg/SvgComponent"
 import AppText from "../components/AppText"
 import HowitworksRow from "../components/HowitworksRow"
 import { Ionicons } from "@expo/vector-icons"
+import * as Haptics from 'expo-haptics';
 
-export default function Howitworks() {
+export default function Howitworks({navigation}) {
   return (
     <View style={styles.container}>
         <View style={styles.emptyFlex}>
@@ -14,7 +15,10 @@ export default function Howitworks() {
               name="arrow-back-circle" 
               size={45}
               color="#39B3BB"
-              onPress={() => console.log("bruh")}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                navigation.navigate("SigninScreen")
+              }}
             />
         </View>
         <View style={styles.titleFlex}>
