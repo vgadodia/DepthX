@@ -9,11 +9,9 @@
   },
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.1.0",
-<<<<<<< HEAD
-=======
+    "@react-native-async-storage/async-storage": "^1.13.2",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/native": "^5.8.10",
->>>>>>> 8a30c2fa3f5442ec1eba4ba97a071de8f7e4b5f7
     "@react-navigation/stack": "^5.12.8",
     "expo": "~40.0.0",
     "expo-app-loading": "^1.0.1",

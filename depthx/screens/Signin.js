@@ -6,11 +6,11 @@ import AppText from "../components/AppText";
 import SigninButton from "../components/SigninButton";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
-import * as Haptics from 'expo-haptics';
-
+import * as Haptics from "expo-haptics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthSession } from "expo";
 
-// console.disableYellowBox = true;
+console.disableYellowBox = true;
 
 const client_id = "b8d9a9d5e7d5441690edf7f26f137b82";
 const client_secret = "bab57308756c485097e18fa5561fd00f";
@@ -22,7 +22,7 @@ const discovery = {
   tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
-export default function Signin({navigation}) {
+export default function Signin({ navigation }) {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: client_id,
@@ -76,6 +76,8 @@ export default function Signin({navigation}) {
       .then((data) => {
         if (data.access_token) {
           console.log(data.access_token);
+          AsyncStorage.setItem("token", JSON.stringify(data.access_token));
+          navigation.navigate("CameraScreen");
         }
       });
   };
@@ -92,13 +94,13 @@ export default function Signin({navigation}) {
   }, [response]);
 
   const handleSpotify = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     promptAsync();
   };
 
   const handleHowitworks = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    navigation.navigate("HowitworksScreen")
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("HowitworksScreen");
   };
 
   return (
