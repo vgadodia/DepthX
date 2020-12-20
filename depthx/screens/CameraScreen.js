@@ -49,19 +49,20 @@ export default class CameraScreen extends React.Component {
     await tf.ready();
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     let textureDims;
+    let tensorDims;
     if (Platform.OS === "ios") {
       textureDims = { height: 1920, width: 1080 };
+      tensorDims = { height: 500, width: 290 };
     } else {
       textureDims = { height: 1200, width: 1600 };
+      tensorDims = { height: 300, width: 400 };
     }
-    // const tensorDims = {height: 300, width: 400 };
-    const tensorDims = { height: 500, width: 290 };
 
     const scale = {
-      //height: styles.camera.height / tensorDims.height,
-      //width: styles.camera.width / tensorDims.width,
-      height: 1,
-      width: 1,
+      height: styles.camera.height / tensorDims.height,
+      width: styles.camera.width / tensorDims.width,
+      // height: 1,
+      // width: 1,
     };
 
     const handposeModel = await this.loadHandposeModel();
@@ -151,9 +152,7 @@ export default class CameraScreen extends React.Component {
     //       this.setState({ gesture: "play" });
     //     }
     //   }
-    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-    //     console.log("primary contact");
-    //   }
+    //
     //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
     //     console.log("skip to next song");
 
@@ -170,11 +169,6 @@ export default class CameraScreen extends React.Component {
     //     if (this.state.gesture != "skip to next song") {
     //       this.setState({ gesture: "skip to next song" });
     //     }
-    //   }
-    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] > hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-    //     console.log("get slack messages");
-    //   }
-    //   else if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] > hand.landmarks[20][1]) {
     //   }
 
     //   const rate = 1;
@@ -225,7 +219,7 @@ export default class CameraScreen extends React.Component {
           cameraTextureWidth={textureDims.width}
           resizeHeight={tensorDims.height}
           resizeWidth={tensorDims.width}
-          resizeDepth={3}
+          resizeDepth={4}
           onReady={this.handleImageTensorReady}
           autorender={AUTORENDER}
         />
