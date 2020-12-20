@@ -11,9 +11,15 @@ import {
   fetch,
   decodeJpeg,
 } from "@tensorflow/tfjs-react-native";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import CallDetectorManager from 'react-native-call-detection'
+import {
+  AntDesign,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import AppText from "../components/AppText";
+import * as Haptics from "expo-haptics";
 
 const TensorCamera = cameraWithTensors(Camera);
 const AUTORENDER = true;
@@ -36,6 +42,7 @@ export default class CameraScreen extends React.Component {
       hands: [],
       mobilenetClasses: [],
       gesture: "nothing detected",
+      showCamera: false,
     };
 
     this.handleImageTensorReady = this.handleImageTensorReady.bind(this);
@@ -49,20 +56,19 @@ export default class CameraScreen extends React.Component {
     await tf.ready();
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     let textureDims;
-    let tensorDims;
     if (Platform.OS === "ios") {
       textureDims = { height: 1920, width: 1080 };
-      tensorDims = { height: 500, width: 290 };
     } else {
       textureDims = { height: 1200, width: 1600 };
-      tensorDims = { height: 300, width: 400 };
     }
+    // const tensorDims = {height: 300, width: 400 };
+    const tensorDims = { height: 500, width: 290 };
 
     const scale = {
-      height: styles.camera.height / tensorDims.height,
-      width: styles.camera.width / tensorDims.width,
-      // height: 1,
-      // width: 1,
+      //height: styles.camera.height / tensorDims.height,
+      //width: styles.camera.width / tensorDims.width,
+      height: 1,
+      width: 1,
     };
 
     const handposeModel = await this.loadHandposeModel();
@@ -82,7 +88,6 @@ export default class CameraScreen extends React.Component {
       if (this.state.handDetector != null) {
         if (frameCount % makePredictionEveryNFrames === 0) {
           const imageTensor = images.next().value;
-
           const returnTensors = false;
           const hands = await this.state.handDetector.estimateHands(
             imageTensor,
@@ -107,101 +112,307 @@ export default class CameraScreen extends React.Component {
   }
 
   renderInitialization() {
-    return null;
+    return (
+      // <View style={styles.container}>
+      //   <Text>Initializaing TensorFlow.js!</Text>
+      //   <Text>tf.version {tf.version_core}</Text>
+      //   <Text>tf.backend {tf.getBackend()}</Text>
+      // </View>
+      null
+    );
   }
 
   renderHandsDebugInfo() {
     const { hands, scale, textureDims } = this.state;
 
-    console.log(hands);
+    return hands.map((hand, i) => {
+      // const {topLeft, bottomRight, probability} = hand;
+      // Render landmarks
+      if (
+        hand.landmarks[5][1] < hand.landmarks[8][1] &&
+        hand.landmarks[9][1] < hand.landmarks[12][1] &&
+        hand.landmarks[13][1] < hand.landmarks[16][1] &&
+        hand.landmarks[17][1] < hand.landmarks[20][1]
+      ) {
+        console.log("pause");
+        // fetch('https://api.spotify.com/v1/me/player/pause', {
+        //   method: 'PUT',
+        //   headers: {
+        //     'Authorization': "Bearer " + AsyncStorage.getItem("token")
+        //   },
 
-    return null;
+        // })
+        // .then((response) => response.json())
+        // .then((data) => console.log(data))
+        // .catch((error) => console.log(error.message));
 
-    // hands.map((hand, i) => {
-    //   // const {topLeft, bottomRight, probability} = hand;
-    //   // Render landmarks
-    //   if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-    //     console.log("pause");
-    //     fetch('https://api.spotify.com/v1/me/player/pause', {
-    //       method: 'PUT',
-    //       headers: {
-    //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
-    //       },
+        if (this.state.gesture != "pause") {
+          this.setState({ gesture: "pause" });
+        }
+      } else if (
+        hand.landmarks[5][1] > hand.landmarks[8][1] &&
+        hand.landmarks[9][1] > hand.landmarks[12][1] &&
+        hand.landmarks[13][1] > hand.landmarks[16][1] &&
+        hand.landmarks[17][1] > hand.landmarks[20][1]
+      ) {
+        console.log("play");
+        // fetch('https://api.spotify.com/v1/me/player/play', {
+        //   method: 'PUT',
+        //   headers: {
+        //     'Authorization': "Bearer " + AsyncStorage.getItem("token")
+        //   },
 
-    //     })
-    //       .then((response) => response.json())
-    //       .then((data) => console.log(data))
-    //       .catch((error) => console.log(error.message));
-    //     if (this.state.gesture != "pause") {
-    //       this.setState({ gesture: "pause" });
-    //     }
-    //   }
-    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] > hand.landmarks[16][1] && hand.landmarks[17][1] > hand.landmarks[20][1]) {
-    //     console.log("play");
-    //     fetch('https://api.spotify.com/v1/me/player/play', {
-    //       method: 'PUT',
-    //       headers: {
-    //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
-    //       },
+        // })
+        // .then((response) => response.json())
+        // .then((data) => console.log(data))
+        // .catch((error) => console.log(error.message));
 
-    //     })
-    //       .then((response) => response.json())
-    //       .then((data) => console.log(data))
-    //       .catch((error) => console.log(error.message));
-    //     if (this.state.gesture != "play") {
-    //       this.setState({ gesture: "play" });
-    //     }
-    //   }
-    //
-    //   else if (hand.landmarks[5][1] > hand.landmarks[8][1] && hand.landmarks[9][1] > hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
-    //     console.log("skip to next song");
+        if (this.state.gesture != "play") {
+          this.setState({ gesture: "play" });
+        }
+      } else if (
+        hand.landmarks[5][1] > hand.landmarks[8][1] &&
+        hand.landmarks[9][1] < hand.landmarks[12][1] &&
+        hand.landmarks[13][1] < hand.landmarks[16][1] &&
+        hand.landmarks[17][1] < hand.landmarks[20][1]
+      ) {
+        console.log("primary contact");
+        // if (this.state.gesture !== "primary contact") {
+        //   this.setState({ gesture: "primary contact" });
+        //   const contact1 = AsyncStorage.getItem("contact1")
+        //   Linking.openURL('tel://' + "6175840000")
+        // }
+      } else if (
+        hand.landmarks[5][1] > hand.landmarks[8][1] &&
+        hand.landmarks[9][1] > hand.landmarks[12][1] &&
+        hand.landmarks[13][1] < hand.landmarks[16][1] &&
+        hand.landmarks[17][1] < hand.landmarks[20][1]
+      ) {
+        console.log("skip to next song");
 
-    //     fetch('https://api.spotify.com/v1/me/player/next', {
-    //       method: 'POST',
-    //       headers: {
-    //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
-    //       },
+        // fetch('https://api.spotify.com/v1/me/player/next', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Authorization': "Bearer " + AsyncStorage.getItem("token")
+        //   },
+        // })
+        // .then((response) => response.json())
+        // .then((data) => console.log(data))
+        // .catch((error) => console.log(error.message));
 
-    //     })
-    //       .then((response) => response.json())
-    //       .then((data) => console.log(data))
-    //       .catch((error) => console.log(error.message));
-    //     if (this.state.gesture != "skip to next song") {
-    //       this.setState({ gesture: "skip to next song" });
-    //     }
-    //   }
+        if (this.state.gesture != "skip to next song") {
+          this.setState({ gesture: "skip to next song" });
+        }
+      } else if (
+        hand.landmarks[5][1] > hand.landmarks[8][1] &&
+        hand.landmarks[9][1] > hand.landmarks[12][1] &&
+        hand.landmarks[13][1] > hand.landmarks[16][1] &&
+        hand.landmarks[17][1] < hand.landmarks[20][1]
+      ) {
+        console.log("get slack messages");
+        if (this.state.gesture != "get slack messages") {
+          this.setState({ gesture: "get slack messages" });
+        }
+      } else if (
+        hand.landmarks[5][1] < hand.landmarks[8][1] &&
+        hand.landmarks[9][1] < hand.landmarks[12][1] &&
+        hand.landmarks[13][1] < hand.landmarks[16][1] &&
+        hand.landmarks[17][1] > hand.landmarks[20][1]
+      ) {
+        console.log("secondary contact");
+      } else {
+        console.log("Hello");
+        if (this.state.gesture != "nothing detected") {
+          this.setState({ gesture: "nothing detected" });
+        }
+      }
 
-    //   const rate = 1;
+      const rate = 1;
 
-    //   return <>
-    //     <Svg key={i} height={previewHeight} width={previewWidth} viewBox={`0 0 290 500`} style={{ position: 'absolute', top: 200, left: 0, opacity: 0.9 }}>
-    //       <Circle cx={hand.landmarks[0][0] * rate} cy={hand.landmarks[0][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[1][0] * rate} cy={hand.landmarks[1][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[2][0] * rate} cy={hand.landmarks[2][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[3][0] * rate} cy={hand.landmarks[3][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[4][0] * rate} cy={hand.landmarks[4][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[5][0] * rate} cy={hand.landmarks[5][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[6][0] * rate} cy={hand.landmarks[6][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[7][0] * rate} cy={hand.landmarks[7][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[8][0] * rate} cy={hand.landmarks[8][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[9][0] * rate} cy={hand.landmarks[9][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[10][0] * rate} cy={hand.landmarks[10][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[11][0] * rate} cy={hand.landmarks[11][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[12][0] * rate} cy={hand.landmarks[12][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[13][0] * rate} cy={hand.landmarks[13][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[14][0] * rate} cy={hand.landmarks[14][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[15][0] * rate} cy={hand.landmarks[15][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[16][0] * rate} cy={hand.landmarks[16][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[17][0] * rate} cy={hand.landmarks[17][1] * rate} r="2" stroke="yellow" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[18][0] * rate} cy={hand.landmarks[18][1] * rate} r="2" stroke="blue" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[19][0] * rate} cy={hand.landmarks[19][1] * rate} r="2" stroke="red" strokeWidth="2.5" fill="red" />
-    //       <Circle cx={hand.landmarks[20][0] * rate} cy={hand.landmarks[20][1] * rate} r="2" stroke="green" strokeWidth="2.5" fill="red" />
-    //     </Svg>
-    //     <Text style={styles.textContainer} key={`faceInfo${i}`}>
-    //       Probability: {hand.handInViewConfidence}
-    //     </Text>
-    //   </>
-    // });
+      return (
+        <>
+          <Svg
+            key={i}
+            height={previewHeight}
+            width={previewWidth}
+            viewBox={`0 0 290 500`}
+            style={{ position: "absolute", top: 200, left: 0, opacity: 0.9 }}
+          >
+            <Circle
+              cx={hand.landmarks[0][0] * rate}
+              cy={hand.landmarks[0][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[1][0] * rate}
+              cy={hand.landmarks[1][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[2][0] * rate}
+              cy={hand.landmarks[2][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[3][0] * rate}
+              cy={hand.landmarks[3][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[4][0] * rate}
+              cy={hand.landmarks[4][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[5][0] * rate}
+              cy={hand.landmarks[5][1] * rate}
+              r="2"
+              stroke="yellow"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[6][0] * rate}
+              cy={hand.landmarks[6][1] * rate}
+              r="2"
+              stroke="blue"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[7][0] * rate}
+              cy={hand.landmarks[7][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[8][0] * rate}
+              cy={hand.landmarks[8][1] * rate}
+              r="2"
+              stroke="green"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[9][0] * rate}
+              cy={hand.landmarks[9][1] * rate}
+              r="2"
+              stroke="yellow"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[10][0] * rate}
+              cy={hand.landmarks[10][1] * rate}
+              r="2"
+              stroke="blue"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[11][0] * rate}
+              cy={hand.landmarks[11][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[12][0] * rate}
+              cy={hand.landmarks[12][1] * rate}
+              r="2"
+              stroke="green"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[13][0] * rate}
+              cy={hand.landmarks[13][1] * rate}
+              r="2"
+              stroke="yellow"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[14][0] * rate}
+              cy={hand.landmarks[14][1] * rate}
+              r="2"
+              stroke="blue"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[15][0] * rate}
+              cy={hand.landmarks[15][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[16][0] * rate}
+              cy={hand.landmarks[16][1] * rate}
+              r="2"
+              stroke="green"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[17][0] * rate}
+              cy={hand.landmarks[17][1] * rate}
+              r="2"
+              stroke="yellow"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[18][0] * rate}
+              cy={hand.landmarks[18][1] * rate}
+              r="2"
+              stroke="blue"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[19][0] * rate}
+              cy={hand.landmarks[19][1] * rate}
+              r="2"
+              stroke="red"
+              strokeWidth="2.5"
+              fill="red"
+            />
+            <Circle
+              cx={hand.landmarks[20][0] * rate}
+              cy={hand.landmarks[20][1] * rate}
+              r="2"
+              stroke="green"
+              strokeWidth="2.5"
+              fill="red"
+            />
+          </Svg>
+          {/* <Text style={styles.textContainer} key={`faceInfo${i}`}>
+          Probability: {hand.handInViewConfidence}
+        </Text> */}
+        </>
+      );
+    });
   }
 
   renderMain() {
@@ -219,7 +430,7 @@ export default class CameraScreen extends React.Component {
           cameraTextureWidth={textureDims.width}
           resizeHeight={tensorDims.height}
           resizeWidth={tensorDims.width}
-          resizeDepth={4}
+          resizeDepth={3}
           onReady={this.handleImageTensorReady}
           autorender={AUTORENDER}
         />
@@ -227,15 +438,99 @@ export default class CameraScreen extends React.Component {
     );
 
     return (
-      <View>
-        {camView}
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <MaterialCommunityIcons
+            name="arrow-left-circle"
+            size={45}
+            color="#39B3BB"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              this.props.navigation.navigate("SigninScreen");
+            }}
+          />
+          <AntDesign
+            name="questioncircle"
+            size={40}
+            color="#39B3BB"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              this.props.navigation.navigate("HowitworksScreen");
+            }}
+          />
+        </View>
+        <View style={styles.cameraContainer}>
+          {this.state.showCamera === true ? (
+            <TensorCamera
+              style={styles.camera}
+              type={this.state.cameraType}
+              zoom={0}
+              cameraTextureHeight={textureDims.height}
+              cameraTextureWidth={textureDims.width}
+              resizeHeight={tensorDims.height}
+              resizeWidth={tensorDims.width}
+              resizeDepth={3}
+              onReady={this.handleImageTensorReady}
+              autorender={AUTORENDER}
+            />
+          ) : (
+            <View
+              style={{ flex: 1, backgroundColor: "#EAEAEA", borderRadius: 0 }}
+            />
+          )}
+          <MaterialCommunityIcons
+            name={this.state.showCamera ? "camera" : "camera-off"}
+            size={45}
+            style={{
+              position: "absolute",
+              zIndex: 100,
+              bottom: 5,
+              paddingLeft: "15%",
+            }}
+            color="white"
+            onPress={() => {
+              let cameraOn = !this.state.showCamera;
+              this.setState({ showCamera: cameraOn });
+            }}
+          />
+        </View>
+        <View style={styles.spaceContainer}></View>
+        <View style={styles.gestureContainer}>
+          <AppText style={{ color: "#39B3BB", fontSize: 18 }}>
+            Detected Gesture
+          </AppText>
+          <AppText style={{ fontSize: 24 }}>{this.state.gesture}</AppText>
+        </View>
+        <View style={styles.controlsContainer}>
+          <AppText style={{ color: "#39B3BB", fontSize: 18 }}>
+            Manual Controls
+          </AppText>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <MaterialCommunityIcons
+              name="skip-previous"
+              size={45}
+              color="black"
+              style={{ paddingHorizontal: 10 }}
+            />
+            <MaterialCommunityIcons
+              name="play"
+              size={55}
+              color="black"
+              style={{ paddingHorizontal: 10 }}
+            />
+            <MaterialCommunityIcons
+              name="skip-next"
+              size={45}
+              color="black"
+              style={{ paddingHorizontal: 10 }}
+            />
+          </View>
+        </View>
 
         {/* <Text style={styles.textContainer}>tf.backend {tf.getBackend()}</Text> */}
-        <View style={styles.infoContainer}>
-          <Text style={styles.titleText}>
-            Detected Gesture: {this.state.gesture}
-          </Text>
-        </View>
+        {/* <View style={styles.infoContainer}>
+          <Text style={styles.titleText}>Detected Gesture: {this.state.gesture}</Text>
+        </View> */}
         {/* <Text style={styles.textContainer}># hands detected: {hands.length}</Text> */}
         {/* {this.renderBoundingBoxes()} */}
         {this.renderHandsDebugInfo()}
@@ -273,35 +568,47 @@ export default class CameraScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+  },
+  spaceContainer: {
+    flex: 0.01,
+  },
+  gestureContainer: {
+    flex: 0.15,
+    justifyContent: "space-evenly",
     alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
+  },
+  controlsContainer: {
+    flex: 0.15,
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   cameraContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "90%",
-    backgroundColor: "#fff",
+    // display: 'flex',
+    // flexDirection: 'column',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // width: '100%',
+    // height: '90%',
+    // backgroundColor: '#fff',
+    flex: 0.5,
+    paddingHorizontal: "10%",
   },
   textContainer: {
     alignItems: "center",
     textAlign: "center",
     top: 30,
   },
+  topContainer: {
+    flex: 0.12,
+    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+    paddingBottom: "2%",
+  },
   camera: {
-    position: "absolute",
-    left: previewLeft,
-    top: previewTop,
-    width: previewWidth,
-    height: previewHeight,
-    zIndex: 1,
-    borderWidth: 1,
-    borderColor: "black",
-    borderRadius: 0,
+    height: "100%",
+    borderRadius: 12,
   },
   bbox: {
     position: "absolute",
