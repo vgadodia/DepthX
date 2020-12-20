@@ -112,6 +112,7 @@ export default class CameraScreen extends React.Component {
   renderHandsDebugInfo() {
     const { hands, scale, textureDims } = this.state;
 
+<<<<<<< HEAD
     console.log(hands);
 
     return null;
@@ -127,6 +128,23 @@ export default class CameraScreen extends React.Component {
     //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
     //       },
 
+=======
+    console.log(hands)
+
+    return null;
+    
+    // hands.map((hand, i) => {
+    //   // const {topLeft, bottomRight, probability} = hand;
+    //   // Render landmarks 
+    //   if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] < hand.landmarks[20][1]) {
+    //     console.log("pause");
+    //     fetch('https://api.spotify.com/v1/me/player/pause', {
+    //       method: 'PUT',
+    //       headers: {
+    //         'Authorization': "Bearer " + AsyncStorage.getItem("token")
+    //       },
+
+>>>>>>> 0289d822cd0d2bfab077a7a72a9a894fcd4f2357
     //     })
     //       .then((response) => response.json())
     //       .then((data) => console.log(data))
@@ -177,6 +195,10 @@ export default class CameraScreen extends React.Component {
     //   else if (hand.landmarks[5][1] < hand.landmarks[8][1] && hand.landmarks[9][1] < hand.landmarks[12][1] && hand.landmarks[13][1] < hand.landmarks[16][1] && hand.landmarks[17][1] > hand.landmarks[20][1]) {
     //   }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0289d822cd0d2bfab077a7a72a9a894fcd4f2357
     //   const rate = 1;
 
     //   return <>
