@@ -45,6 +45,7 @@ export default class CameraScreen extends React.Component {
       showCamera: false,
       playing: false,
       token: "",
+      isFree: true,
     };
 
     this.handleImageTensorReady = this.handleImageTensorReady.bind(this);
@@ -203,21 +204,30 @@ export default class CameraScreen extends React.Component {
         hand.landmarks[17][1] < hand.landmarks[20][1]
       ) {
         console.log("skip to next song");
-        if (this.state.playing == false) {
-          this.setState({ playing: true });
-        }
-        fetch("https://api.spotify.com/v1/me/player/next", {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + this.state.token,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data))
-          .catch((error) => console.log(error.message));
 
-        if (this.state.gesture != "skip to next song") {
-          this.setState({ gesture: "skip to next song" });
+        if (this.state.isFree) {
+          this.setState({ isFree: false });
+
+          if (this.state.playing == false) {
+            this.setState({ playing: true });
+          }
+          fetch("https://api.spotify.com/v1/me/player/next", {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + this.state.token,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => console.log(data))
+            .catch((error) => console.log(error.message));
+
+          if (this.state.gesture != "skip to next song") {
+            this.setState({ gesture: "skip to next song" });
+          }
+
+          setTimeout(() => {
+            this.setState({ isFree: true });
+          }, 1000);
         }
       } else {
         console.log("Hello");
