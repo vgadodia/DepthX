@@ -20,7 +20,7 @@ import {
 } from "@expo/vector-icons";
 import AppText from "../components/AppText";
 import * as Haptics from "expo-haptics";
-import LottieAnimation from './LottieAnimation'
+import LottieAnimation from "./LottieAnimation";
 
 const TensorCamera = cameraWithTensors(Camera);
 const AUTORENDER = true;
@@ -47,6 +47,7 @@ export default class CameraScreen extends React.Component {
       playing: false,
       token: "",
       isFree: true,
+      isFree1: true,
     };
 
     this.handleImageTensorReady = this.handleImageTensorReady.bind(this);
@@ -153,51 +154,48 @@ export default class CameraScreen extends React.Component {
         // const {topLeft, bottomRight, probability} = hand;
         // Render landmarks
         if (
-          hand.landmarks[5][1] < hand.landmarks[8][1] &&
-          hand.landmarks[9][1] < hand.landmarks[12][1] &&
-          hand.landmarks[13][1] < hand.landmarks[16][1] &&
-          hand.landmarks[17][1] < hand.landmarks[20][1]
-        ) {
-          console.log("Pause");
-
-          if (this.state.playing == true) {
-            this.setState({ playing: false });
-          }
-          fetch("https://api.spotify.com/v1/me/player/pause", {
-            method: "PUT",
-            headers: {
-              Authorization: "Bearer " + this.state.token,
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.log(error.message));
-
-          if (this.state.gesture != "Pause") {
-            this.setState({ gesture: "Pause" });
-          }
-        } else if (
           hand.landmarks[5][1] > hand.landmarks[8][1] &&
           hand.landmarks[9][1] > hand.landmarks[12][1] &&
           hand.landmarks[13][1] > hand.landmarks[16][1] &&
           hand.landmarks[17][1] > hand.landmarks[20][1]
         ) {
-          console.log("Play");
-          if (this.state.playing == false) {
-            this.setState({ playing: true });
-          }
-          fetch("https://api.spotify.com/v1/me/player/play", {
-            method: "PUT",
-            headers: {
-              Authorization: "Bearer " + this.state.token,
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.log(error.message));
+          if (this.state.isFree1) {
+            this.setState({ isFree1: false });
+            console.log("Play/pause");
+            if (this.state.playing == false) {
+              this.setState({ playing: true });
+              fetch("https://api.spotify.com/v1/me/player/play", {
+                method: "PUT",
+                headers: {
+                  Authorization: "Bearer " + this.state.token,
+                },
+              })
+                .then((response) => response.json())
+                .then((data) => console.log(data))
+                .catch((error) => console.log(error.message));
 
-          if (this.state.gesture != "Play") {
-            this.setState({ gesture: "Play" });
+              if (this.state.gesture != "Play") {
+                this.setState({ gesture: "Play" });
+              }
+            } else {
+              this.setState({ playing: false });
+              fetch("https://api.spotify.com/v1/me/player/pause", {
+                method: "PUT",
+                headers: {
+                  Authorization: "Bearer " + this.state.token,
+                },
+              })
+                .then((response) => response.json())
+                .then((data) => console.log(data))
+                .catch((error) => console.log(error.message));
+
+              if (this.state.gesture != "Pause") {
+                this.setState({ gesture: "Pause" });
+              }
+            }
+            setTimeout(() => {
+              this.setState({ isFree1: true });
+            }, 2000);
           }
         } else if (
           hand.landmarks[5][1] > hand.landmarks[8][1] &&
@@ -489,7 +487,7 @@ export default class CameraScreen extends React.Component {
           ) : (
             <>
               <TensorCamera
-                style={[styles.camera, {height: 0}]}
+                style={[styles.camera, { height: 0 }]}
                 type={this.state.cameraType}
                 zoom={0}
                 cameraTextureHeight={textureDims.height}
