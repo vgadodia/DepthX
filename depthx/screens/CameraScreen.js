@@ -466,7 +466,7 @@ export default class CameraScreen extends React.Component {
             color="#39B3BB"
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              this.props.navigation.navigate("HowitworksScreen");
+              this.props.navigation.navigate("HowitworksScreen2");
             }}
           />
         </View>
