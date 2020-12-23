@@ -20,6 +20,7 @@ import {
 } from "@expo/vector-icons";
 import AppText from "../components/AppText";
 import * as Haptics from "expo-haptics";
+import LottieAnimation from './LottieAnimation'
 
 const TensorCamera = cameraWithTensors(Camera);
 const AUTORENDER = true;
@@ -42,7 +43,7 @@ export default class CameraScreen extends React.Component {
       hands: [],
       mobilenetClasses: [],
       gesture: "nothing detected",
-      showCamera: false,
+      showCamera: true,
       playing: false,
       token: "",
       isFree: true,
@@ -140,7 +141,7 @@ export default class CameraScreen extends React.Component {
       //   <Text>tf.version {tf.version_core}</Text>
       //   <Text>tf.backend {tf.getBackend()}</Text>
       // </View>
-      null
+      <LottieAnimation />
     );
   }
 
@@ -157,7 +158,7 @@ export default class CameraScreen extends React.Component {
           hand.landmarks[13][1] < hand.landmarks[16][1] &&
           hand.landmarks[17][1] < hand.landmarks[20][1]
         ) {
-          console.log("pause");
+          console.log("Pause");
 
           if (this.state.playing == true) {
             this.setState({ playing: false });
@@ -172,8 +173,8 @@ export default class CameraScreen extends React.Component {
             .then((data) => console.log(data))
             .catch((error) => console.log(error.message));
 
-          if (this.state.gesture != "pause") {
-            this.setState({ gesture: "pause" });
+          if (this.state.gesture != "Pause") {
+            this.setState({ gesture: "Pause" });
           }
         } else if (
           hand.landmarks[5][1] > hand.landmarks[8][1] &&
@@ -181,7 +182,7 @@ export default class CameraScreen extends React.Component {
           hand.landmarks[13][1] > hand.landmarks[16][1] &&
           hand.landmarks[17][1] > hand.landmarks[20][1]
         ) {
-          console.log("play");
+          console.log("Play");
           if (this.state.playing == false) {
             this.setState({ playing: true });
           }
@@ -195,8 +196,8 @@ export default class CameraScreen extends React.Component {
             .then((data) => console.log(data))
             .catch((error) => console.log(error.message));
 
-          if (this.state.gesture != "play") {
-            this.setState({ gesture: "play" });
+          if (this.state.gesture != "Play") {
+            this.setState({ gesture: "Play" });
           }
         } else if (
           hand.landmarks[5][1] > hand.landmarks[8][1] &&
@@ -204,7 +205,7 @@ export default class CameraScreen extends React.Component {
           hand.landmarks[13][1] < hand.landmarks[16][1] &&
           hand.landmarks[17][1] < hand.landmarks[20][1]
         ) {
-          console.log("skip to next song");
+          console.log("Skip song");
 
           if (this.state.isFree) {
             this.setState({ isFree: false });
@@ -222,8 +223,8 @@ export default class CameraScreen extends React.Component {
               .then((data) => console.log(data))
               .catch((error) => console.log(error.message));
 
-            if (this.state.gesture != "skip to next song") {
-              this.setState({ gesture: "skip to next song" });
+            if (this.state.gesture != "Skip song") {
+              this.setState({ gesture: "Skip song" });
             }
 
             setTimeout(() => {
@@ -231,9 +232,8 @@ export default class CameraScreen extends React.Component {
             }, 2000);
           }
         } else {
-          console.log("Hello");
-          if (this.state.gesture != "nothing detected") {
-            this.setState({ gesture: "nothing detected" });
+          if (this.state.gesture != "Nothing detected") {
+            this.setState({ gesture: "Nothing detected" });
           }
         }
 
@@ -487,9 +487,23 @@ export default class CameraScreen extends React.Component {
               autorender={AUTORENDER}
             />
           ) : (
-            <View
-              style={{ flex: 1, backgroundColor: "#EAEAEA", borderRadius: 0 }}
-            />
+            <>
+              <TensorCamera
+                style={[styles.camera, {height: 0}]}
+                type={this.state.cameraType}
+                zoom={0}
+                cameraTextureHeight={textureDims.height}
+                cameraTextureWidth={textureDims.width}
+                resizeHeight={tensorDims.height}
+                resizeWidth={tensorDims.width}
+                resizeDepth={3}
+                onReady={this.handleImageTensorReady}
+                autorender={AUTORENDER}
+              />
+              <View
+                style={{ flex: 1, backgroundColor: "#EAEAEA", borderRadius: 0 }}
+              />
+            </>
           )}
           <MaterialCommunityIcons
             name={this.state.showCamera ? "camera" : "camera-off"}
