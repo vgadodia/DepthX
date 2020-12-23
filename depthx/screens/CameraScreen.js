@@ -227,7 +227,7 @@ export default class CameraScreen extends React.Component {
 
           setTimeout(() => {
             this.setState({ isFree: true });
-          }, 1000);
+          }, 2000);
         }
       } else {
         console.log("Hello");
